@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Note</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900 min-h-screen flex items-center justify-center">
+
+  <div class="bg-gray-800/90 backdrop-blur-lg p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+    
+    <h1 class="text-2xl font-bold text-red-400 mb-4 flex items-center gap-2">
+      ⚠️ Delete Note
+    </h1>
+    
+    <p class="text-gray-300 mb-6">
+      Are you sure you want to permanently delete 
+      <span class="font-semibold text-white">"{{ note.title }}"</span>?
+    </p>
+    
+    <form method="post" class="flex gap-4">
+      {% csrf_token %}
+      <button type="submit" 
+        class="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-md font-medium transition duration-300">
+        Yes, Delete
+      </button>
+      <a href="{% url 'note_list' %}" 
+        class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-md font-medium text-center transition duration-300">
+        Cancel
+      </a>
+    </form>
+    
+  </div>
+
+</body>
+</html>

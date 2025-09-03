@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #121212;
+            color: #f1f1f1;
+        }
+        header {
+            background: #1e1e1e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #4dabf7;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .nav-links a, .nav-links button {
+            color: #f1f1f1;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .nav-links a:hover, .nav-links button:hover {
+            color: #4dabf7;
+            text-decoration: underline;
+        }
+        main {
+            padding: 20px;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <!-- No links shown for now -->
+            {% else %}
+                <a href="{% url 'login' %}">🔑 Login</a>
+                <a href="{% url 'signup' %}">🆕 Signup</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        &copy; {{ year|default:"2025" }}
+    </footer>
+</body>
+</html>

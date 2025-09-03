@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="note-form-container">
+    <h2>{% if form.instance.pk %}✏️ Edit Note{% else %}➕ Create Note{% endif %}</h2>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <!-- Title field (smaller height & no spellcheck) -->
+        <div class="form-group">
+            <input type="text" id="id_title" name="title" value="{{ form.instance.title }}" spellcheck="false" required>
+            <label for="id_title">📝 Title</label>
+        </div>
+
+        <!-- Content field (contenteditable div instead of textarea) -->
+        <div class="form-group">
+            <div id="noteEditor" class="editor" contenteditable="true" spellcheck="false">
+                {{ form.instance.content|safe }}
+            </div>
+            <label for="noteEditor">📄 Content</label>
+            <!-- hidden input to store formatted content -->
+            <input type="hidden" name="content" id="hiddenContent">
+        </div>
+
+        <!-- Style Controls -->
+        <div class="style-controls">
+            <label for="colorPicker">🎨 Color:</label>
+            <input type="color" id="colorPicker" value="#ffffff">
+
+            <label for="styleSelect">🖋 Style:</label>
+            <select id="styleSelect">
+                <option value="bold">Bold</option>
+                <option value="italic">Italic</option>
+                <option value="underline">Underline</option>
+                <option value="strike">Strikethrough</option>
+                <option value="superscript">Superscript</option>
+                <option value="subscript">Subscript</option>
+                <option value="highlight">Highlight</option>
+                <option value="monospace">Monospace</option>
+                <option value="uppercase">Uppercase</option>
+                <option value="lowercase">Lowercase</option>
+                <option value="capitalize">Capitalize</option>
+                <option value="overline">Overline</option>
+                <option value="shadow">Shadow</option>
+                <option value="glow">Glow</option>
+                <option value="border">Border</option>
+                <option value="spacing">Letter Spacing</option>
+                <option value="doubleUnderline">Double Underline</option>
+                <option value="smallCaps">Small Caps</option>
+                <option value="rotate">Rotate</option>
+                <option value="blur">Blur</option>
+                <option value="gradient">Gradient</option>
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button type="submit" class="btn btn-save">💾 Save Note</button>
+            <a href="{% url 'note_list' %}" class="btn btn-cancel">❌ Cancel</a>
+        </div>
+    </form>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: #e0e0e0;
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .note-form-container {
+        width: 100%;
+        max-width: 750px;
+        padding: 40px;
+        border-radius: 20px;
+        background: rgba(30, 30, 30, 0.75);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        animation: fadeIn 0.8s ease-in-out;
+        transform: translateY(0);
+        transition: transform 0.3s ease;
+    }
+
+    .note-form-container:hover {
+        transform: translateY(-5px);
+    }
+
+    h2 {
+        color: #00c6ff;
+        text-shadow: 0 0 12px rgba(0, 198, 255, 0.8);
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 600;
+    }
+
+    /* Title smaller */
+    #id_title {
+        height: 40px;
+        font-size: 1rem;
+        padding: 8px 12px;
+        border: 1px solid #555;
+        border-radius: 12px;
+        background: #1e1e1e;
+        color: #fff;
+        width: 100%;
+    }
+
+    /* Floating Label Effect */
+    .form-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+
+    .editor {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #555;
+        border-radius: 12px;
+        background: #1e1e1e;
+        color: #fff;
+        font-size: 1rem;
+        outline: none;
+        min-height: 150px;
+    }
+
+    .form-group input:focus,
+    .editor:focus {
+        border-color: #00c6ff;
+        box-shadow: 0 0 10px rgba(0, 198, 255, 0.5);
+    }
+
+    .form-group label {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        color: #888;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        pointer-events: none;
+    }
+
+    .form-group input:focus + label,
+    .editor:focus + label,
+    .form-group input:not(:placeholder-shown) + label {
+        top: -10px;
+        left: 10px;
+        font-size: 0.75rem;
+        color: #00c6ff;
+    }
+
+    /* Style controls */
+    .style-controls {
+        margin: 20px 0;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .style-controls select, .style-controls input {
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+        background: #2d2d2d;
+        color: white;
+    }
+
+    /* Buttons */
+    .btn-group {
+        display: flex;
+        justify-content: center;
+        margin-top: 25px;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 12px 28px;
+        border-radius: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-save {
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        color: white;
+        border: none;
+        box-shadow: 0 0 15px rgba(0,198,255,0.6);
+    }
+
+    .btn-save:hover {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #0072ff, #00c6ff);
+        box-shadow: 0 0 20px rgba(0,198,255,0.8);
+    }
+
+    .btn-cancel {
+        background: #444;
+        color: #ddd;
+    }
+
+    .btn-cancel:hover {
+        background: #666;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    const editor = document.getElementById("noteEditor");
+    const hiddenContent = document.getElementById("hiddenContent");
+    const colorPicker = document.getElementById("colorPicker");
+    const styleSelect = document.getElementById("styleSelect");
+
+    // Save editor HTML into hidden input before form submission
+    document.querySelector("form").addEventListener("submit", () => {
+        hiddenContent.value = editor.innerHTML;
+    });
+
+    // Apply color to selected text
+    colorPicker.addEventListener("input", () => {
+        document.execCommand("foreColor", false, colorPicker.value);
+    });
+
+    // Apply styles to selected text only
+    styleSelect.addEventListener("change", () => {
+        const style = styleSelect.value;
+        switch (style) {
+            case "bold": document.execCommand("bold"); break;
+            case "italic": document.execCommand("italic"); break;
+            case "underline": document.execCommand("underline"); break; // only when selected
+            case "strike": document.execCommand("strikeThrough"); break;
+            case "superscript": document.execCommand("superscript"); break;
+            case "subscript": document.execCommand("subscript"); break;
+            case "highlight": document.execCommand("backColor", false, "yellow"); break;
+            case "monospace": document.execCommand("fontName", false, "monospace"); break;
+            case "uppercase": document.execCommand("insertText", false, window.getSelection().toString().toUpperCase()); break;
+            case "lowercase": document.execCommand("insertText", false, window.getSelection().toString().toLowerCase()); break;
+            case "capitalize": document.execCommand("insertText", false, window.getSelection().toString().replace(/\b\w/g, c => c.toUpperCase())); break;
+            case "overline": document.execCommand("insertHTML", false, `<span style="text-decoration: overline;">${window.getSelection()}</span>`); break;
+            case "shadow": document.execCommand("insertHTML", false, `<span style="text-shadow: 2px 2px 4px #000;">${window.getSelection()}</span>`); break;
+            case "glow": document.execCommand("insertHTML", false, `<span style="text-shadow: 0 0 8px #4dabf7;">${window.getSelection()}</span>`); break;
+            case "border": document.execCommand("insertHTML", false, `<span style="border:1px solid #fff; padding:2px;">${window.getSelection()}</span>`); break;
+            case "spacing": document.execCommand("insertHTML", false, `<span style="letter-spacing:3px;">${window.getSelection()}</span>`); break;
+            case "doubleUnderline": document.execCommand("insertHTML", false, `<span style="text-decoration: underline double;">${window.getSelection()}</span>`); break;
+            case "smallCaps": document.execCommand("insertHTML", false, `<span style="font-variant: small-caps;">${window.getSelection()}</span>`); break;
+            case "rotate": document.execCommand("insertHTML", false, `<span style="display:inline-block; transform: rotate(5deg);">${window.getSelection()}</span>`); break;
+            case "blur": document.execCommand("insertHTML", false, `<span style="filter: blur(1px);">${window.getSelection()}</span>`); break;
+            case "gradient": document.execCommand("insertHTML", false, `<span style="background: linear-gradient(45deg, #ff4d4d, #4dabf7); -webkit-background-clip: text; color: transparent;">${window.getSelection()}</span>`); break;
+        }
+    });
+</script>
+{% endblock %}
